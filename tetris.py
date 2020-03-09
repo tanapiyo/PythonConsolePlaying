@@ -90,7 +90,7 @@ class Game():
     def __create_next_tetrimino(self):
         rotation = np.random.randint(MAX_TETRIMINO_SIZE)
         kind = np.random.randint(7)
-        tetorimino = Tetrimino(rotation, kind)
+        return Tetrimino(rotation, kind)
     
     '''
     メインからループの中で呼ばれるゲームの処理
@@ -116,7 +116,7 @@ class Game():
         # screen = np.where(screen == 0, "□", screen)#何もない
         # screen = np.where(screen == 1, "◼", screen)#テトリミノ
         # screen = np.where(screen == '2', "＃", screen)#壁
-        print(screen)
+        print(self.screen)
     
     '''
     self.tetriminosの最後の要素をself.screenに反映する
@@ -124,9 +124,13 @@ class Game():
     def __reflect_tetrimino_to_screen(self):
         #for tetrimino in self.tetriminos:
         tetrimino = self.tetriminos[-1]
+        print("a")
+        print(tetrimino)
+        print(self.tetriminos)
         #1行ずつself.screenをテトリミノで置き換え
-        for i in range(MAX_TETRIMINO_SIZE):
-            self.screen[tetrimino.y+i][tetrimino.x:tetrimino.x+MAX_TETRIMINO_SIZE] = tetrimino.tetorimino[i]
+        for i in range(MAX_TETRIMINO_SIZE):#y
+            for j in range(MAX_TETRIMINO_SIZE):#x
+                self.screen[tetrimino.y+i][int(tetrimino.x)+MAX_TETRIMINO_SIZE] = tetrimino.tetorimino[i][j]
 
     '''
     テトリミノ操作
@@ -163,7 +167,6 @@ class Tetrimino():
         self.rotate(rotation)#回転させる
         
     def rotate(self, rotation):#テトリミノ自体を回転して返す
-        print(vars(self))
         for i in range(rotation):
             self.tetorimino = np.rot90(self.tetorimino, -1)
 
