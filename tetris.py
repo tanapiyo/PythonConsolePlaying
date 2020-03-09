@@ -128,7 +128,14 @@ class Game():
         #1行ずつself.screenをテトリミノで置き換え
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                self.screen[tetrimino.y+i][tetrimino.x+MAX_TETRIMINO_SIZE] = tetrimino.tetorimino[i][j]
+                self.screen[tetrimino.y+i][tetrimino.x+j] = tetrimino.tetorimino[i][j]
+                #self.screen[i][j] = 5
+                print(self.screen)
+                # print(tetrimino.y+i)
+                # print(tetrimino.x+MAX_TETRIMINO_SIZE)
+                # print(self.screen[tetrimino.y+i][tetrimino.x+MAX_TETRIMINO_SIZE])
+                # print(tetrimino.tetorimino)
+                
 
     '''
     テトリミノ操作
@@ -179,12 +186,51 @@ class Tetrimino():
 
     
 
+import fcntl
+import termios
+# import sys
+import os
+
+def getkey():
+    fno = sys.stdin.fileno()
+
+    #stdinの端末属性を取得
+    attr_old = termios.tcgetattr(fno)
+
+    # stdinのエコー無効、カノニカルモード無効
+    attr = termios.tcgetattr(fno)
+    attr[3] = attr[3] & ~termios.ECHO & ~termios.ICANON # & ~termios.ISIG
+    termios.tcsetattr(fno, termios.TCSADRAIN, attr)
+
+    # stdinをNONBLOCKに設定
+    fcntl_old = fcntl.fcntl(fno, fcntl.F_GETFL)
+    fcntl.fcntl(fno, fcntl.F_SETFL, fcntl_old | os.O_NONBLOCK)
+
+    chr = 0
+
+    try:
+        # キーを取得
+        c = sys.stdin.read(1)
+        if len(c):
+            while len(c):
+                chr = (chr << 8) + ord(c)
+                c = sys.stdin.read(1)
+    finally:
+        # stdinを元に戻す
+        fcntl.fcntl(fno, fcntl.F_SETFL, fcntl_old)
+        termios.tcsetattr(fno, termios.TCSANOW, attr_old)
+
+    return chr
+
+
+
 if __name__ == "__main__":
     game = Game()#ゲームの初期化
 
     while True:#1秒ごとに描画
-        kb = readchar.readchar()
-        sys.stdout.write(kb)
+        # kb = readchar.readchar()
+        # sys.stdout.write(kb)
+        kb = getkey()
         #キー入力があればテトリミノの操作処理
         if kb == "BB":#下
             game.move_down()
@@ -194,13 +240,15 @@ if __name__ == "__main__":
             game.move_left()
         elif kb == "q":#for debug
             break
-        
+        #sys.stdout.flush()
+
         #テトリミノを落とす・新しいテトリミノを作る
         is_gamecontinue = game.do_game_loop()
 
         if not is_gamecontinue:
             break
 
-        time.sleep(0.5)
+        time.sleep(1)
     
     print("Game Over!")
+
