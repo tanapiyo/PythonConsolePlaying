@@ -11,7 +11,8 @@ MAX_TETRIMINO_SIZE = 4
 class Game():
     def __init__(self):
         #スクリーンの初期化
-        self.screen_size = [WIDTH+2, HEIGHT+2]#枠があるので2ずつ追加
+        #self.screen_size = [WIDTH+2, HEIGHT+2]#枠があるので2ずつ追加
+        self.screen_size = [WIDTH+2, HEIGHT+1]
         self.screen = self.init_board()
 
         #テトリミノの初期化
@@ -25,7 +26,7 @@ class Game():
     def init_board(self):
         screen = np.zeros(self.screen_size, dtype=np.int)
         #枠は2で埋める
-        screen[0] = 2
+        #screen[0] = 2
         screen[-1] = 2 
         screen[:,0] = 2 #列の指定 
         screen[:,-1] = 2
@@ -74,7 +75,7 @@ class Game():
     ゲームオーバー判定（もし最後のテトリミノの上が空いていなければ）
     とりあえず残りが2行になったらゲームーオーバー
     '''
-    def __is_gameover():
+    def __is_gameover(self):
         counter = 0
         for i in range(1, WIDTH+1):
             if self.screen[0][i] in [1,2]:
@@ -97,9 +98,9 @@ class Game():
     テトリミノを下に動かす、テトリミノを固定する、新しいテトリミノを生成する
     '''
     def do_game_loop(self):
-        if __is_gameover():
+        if self.__is_gameover():
             return False
-        if __is_collided():#ぶつかっていたら新しいテトリミノを作る
+        if self.__is_collided():#ぶつかっていたら新しいテトリミノを作る
             self.tetriminos.append(self.__create_next_tetrimino())
             self.__reflect_tetrimino_to_screen()
         else:#ぶつかっていなければ1つ下げる
