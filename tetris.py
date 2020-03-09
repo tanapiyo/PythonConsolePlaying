@@ -6,6 +6,7 @@ import time
 
 WIDTH = 6
 HEIGHT = 20
+MAX_TETRIMINO_SIZE = 4
 
 class Game():
     def __init__(self):
@@ -16,9 +17,11 @@ class Game():
         #テトリミノの初期化
         self.tetriminos = [self.__create_next_tetrimino()]
         self.__reflect_tetrimino_to_screen()
-        print(self.screen)
         self.draw()
 
+    '''
+    スクリーンの作成と壁の作成
+    '''
     def init_board(self):
         screen = np.zeros(self.screen_size, dtype=np.int)
         #枠は2で埋める
@@ -28,8 +31,35 @@ class Game():
         screen[:,-1] = 2
         return screen
 
-    def __is_collided():
-        pass
+    '''
+    テトリミノを固定するかの判定
+    '''
+    def __is_collided(self):
+        #テトリミノの下が壁もしくはテトリミノかどうかの判定
+        for i in range(MAX_TETRIMINO_SIZE):
+            if self.screen[self.tetriminos[-1].y][self.tetriminos[-1].x+i] == 2:
+                return True
+            if self.screen[self.tetriminos[-1].y][self.tetriminos[-1].x+i] == 1:
+                return True
+        return False
+
+    '''
+    テトリミノを動かすことができるかの判定
+    '''
+    def __can_move(self, direction):
+        if direction == "left":
+            if self.screen[self.tetriminos[-1].y][self.tetriminos[-1].x-1] in [1,2]:
+                return False
+            return True
+        elif direction == "right":
+            if self.screen[self.tetriminos[-1].y][self.tetriminos[-1].x+1] in [1,2]:
+                return False
+            return True
+        elif direction == "down":
+            for i in range(MAX_TETRIMINO_SIZE):
+                if self.screen[self.tetriminos[-1].y+1][self.tetriminos[-1].x+i] in [1,2]:
+                    return False
+            return True
 
     '''
     横一列揃っているかの判定
@@ -40,46 +70,77 @@ class Game():
                 return True
         return False
 
+    '''
+    ゲームオーバー判定（もし最後のテトリミノの上が空いていなければ）
+    とりあえず残りが2行になったらゲームーオーバー
+    '''
     def __is_gameover():
-        pass
+        counter = 0
+        for i in range(1, WIDTH+1):
+            if self.screen[0][i] in [1,2]:
+                counter = counter + 1
+                if counter >= 4:
+                    return True
+        return False
 
+
+    '''
+    ランダムな回転と種類のテトリミノを作成する
+    '''
     def __create_next_tetrimino(self):
-        rotation = np.random.randint(4)
+        rotation = np.random.randint(MAX_TETRIMINO_SIZE)
         kind = np.random.randint(7)
         tetorimino = Tetrimino(rotation, kind)
     
+    '''
+    メインからループの中で呼ばれるゲームの処理
+    テトリミノを下に動かす、テトリミノを固定する、新しいテトリミノを生成する
+    '''
     def do_game_loop(self):
         if __is_gameover():
             return False
-        pass#テトリミノ落とす＋新しいの作る
+        if __is_collided():#ぶつかっていたら新しいテトリミノを作る
+            self.tetriminos.append(self.__create_next_tetrimino())
+            self.__reflect_tetrimino_to_screen()
+        else:#ぶつかっていなければ1つ下げる
+            self.tetriminos[-1].y = self.tetriminos[-1].y+1
+        self.draw()
+        return True
+        
 
     '''
     数値をそれっぽく描画する
     '''
     def draw(self):
-        #self.tetriminosをscreenに描画
-        print(self.screen)
+        # screen = self.screen.copy()
+        # screen = np.where(screen == 0, "□", screen)#何もない
+        # screen = np.where(screen == 1, "◼", screen)#テトリミノ
+        # screen = np.where(screen == '2', "＃", screen)#壁
+        print(screen)
     
     '''
-    self.tetriminosをself.screenに反映する
+    self.tetriminosの最後の要素をself.screenに反映する
     '''
     def __reflect_tetrimino_to_screen(self):
-        for tetrimino in self.tetriminos:
-            print(tetrimino)
+        #for tetrimino in self.tetriminos:
+        tetrimino = self.tetriminos[-1]
+        #1行ずつself.screenをテトリミノで置き換え
+        for i in range(MAX_TETRIMINO_SIZE):
+            self.screen[tetrimino.y+i][tetrimino.x:tetrimino.x+MAX_TETRIMINO_SIZE] = tetrimino.tetorimino[i]
 
     '''
     テトリミノ操作
     '''
     def move_left(self):
-        if not __is_collided:
+        if not __can_move("left"):
             self.tetriminos[-1].move_left()
     
     def move_right(self):
-        if not __is_collided:
+        if not __can_move("right"):
             self.tetriminos[-1].move_right()
     
     def move_down(self):
-        if not __is_collided:
+        if not __can_move("down"):
             self.tetriminos[-1].move_down()
 
 class TetriminoKind():
@@ -119,24 +180,20 @@ class Tetrimino():
 
 if __name__ == "__main__":
     game = Game()#ゲームの初期化
+
     while True:#1秒ごとに描画
         kb = readchar.readchar()
         sys.stdout.write(kb)
-        
         #キー入力があればテトリミノの操作処理
-        if kb == "AA":#上
-            break
-        elif kb == "BB":#下
-            pass
+        if kb == "BB":#下
+            game.move_down()
         elif kb == "CC":#右
-            pass
+            game.move_right()
         elif kb == "DD":#左
-            pass
+            game.move_left()
         elif kb == "q":#for debug
             break
         
-        #描画処理
-        game.draw()
         #テトリミノを落とす・新しいテトリミノを作る
         is_gamecontinue = game.do_game_loop()
 
