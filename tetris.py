@@ -118,6 +118,7 @@ class Game():
         # screen = np.where(screen == 1, "◼", screen)#テトリミノ
         # screen = np.where(screen == '2', "＃", screen)#壁
         print(self.screen)
+        print("\n\n\n\n\n")
     
     '''
     self.tetriminosの最後の要素をself.screenに反映する
@@ -129,12 +130,6 @@ class Game():
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
                 self.screen[tetrimino.y+i][tetrimino.x+j] = tetrimino.tetorimino[i][j]
-                #self.screen[i][j] = 5
-                print(self.screen)
-                # print(tetrimino.y+i)
-                # print(tetrimino.x+MAX_TETRIMINO_SIZE)
-                # print(self.screen[tetrimino.y+i][tetrimino.x+MAX_TETRIMINO_SIZE])
-                # print(tetrimino.tetorimino)
                 
 
     '''
