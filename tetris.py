@@ -125,13 +125,10 @@ class Game():
     def __reflect_tetrimino_to_screen(self):
         #for tetrimino in self.tetriminos:
         tetrimino = self.tetriminos[-1]
-        print("a")
-        print(tetrimino)
-        print(self.tetriminos)
         #1行ずつself.screenをテトリミノで置き換え
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                self.screen[tetrimino.y+i][int(tetrimino.x)+MAX_TETRIMINO_SIZE] = tetrimino.tetorimino[i][j]
+                self.screen[tetrimino.y+i][tetrimino.x+MAX_TETRIMINO_SIZE] = tetrimino.tetorimino[i][j]
 
     '''
     テトリミノ操作
@@ -162,7 +159,7 @@ class TetriminoKind():
 class Tetrimino():
     def __init__(self, rotation, kind):
         tetrimino_kind = TetriminoKind()
-        self.x = (WIDTH+2)/2 - 2 #左上
+        self.x = int((WIDTH+2)/2 - 2) #左上
         self.y = 0
         self.tetorimino = tetrimino_kind.tetrimino_list[kind]
         self.rotate(rotation)#回転させる
