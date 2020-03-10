@@ -62,7 +62,7 @@ class Game():
                 if np.any(self.tetrimino.tetorimino[lowest_i]==1):
                     lowest = lowest_i
             for i in range(MAX_TETRIMINO_SIZE):
-                if((self.tetrimino.y+lowest == HEIGHT) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
+                if((self.tetrimino.y+lowest >= HEIGHT-1) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
                     return False
             return True
 
@@ -166,15 +166,15 @@ class Game():
     '''
     def move_left(self):
         if not self.__can_move("left"):
-            self.tetriminos[-1].move_left()
+            self.tetrimino.move_left()
     
     def move_right(self):
         if not self.__can_move("right"):
-            self.tetriminos[-1].move_right()
+            self.tetrimino.move_right()
     
     def move_down(self):
         if not self.__can_move("down"):
-            self.tetriminos[-1].move_down()
+            self.tetrimino.move_down()
             #reflectする
 
 class TetriminoKind():
