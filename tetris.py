@@ -125,7 +125,8 @@ class Game():
         screen_buffer = copy.deepcopy(self.screen)
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                screen_buffer[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
+                if self.tetrimino.tetorimino[i][j] == 1:
+                  screen_buffer[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
         print(screen_buffer)
         print("\n\n\n\n\n")
     
@@ -138,7 +139,8 @@ class Game():
         #1行ずつself.screenをテトリミノで置き換え
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
+                if self.tetrimino.tetorimino[i][j] == 1:
+                    self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
         self.tetriminos = self.__create_next_tetrimino()
     '''
     テトリミノを下げる
@@ -153,7 +155,8 @@ class Game():
             #テトリミノを下げた座標でscreenを更新
             for i in range(MAX_TETRIMINO_SIZE):#y
                 for j in range(MAX_TETRIMINO_SIZE):#x
-                    self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
+                    if self.tetrimino.tetorimino[i][j] == 1:
+                        self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
                 
 
     '''
