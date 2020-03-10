@@ -40,7 +40,7 @@ class Game():
         #テトリミノの下が壁もしくはテトリミノかどうかの判定
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                if self.tetrimino.tetorimino[i][j] == 1 and self.screen[self.tetrimino.y+i+1][self.tetrimino.x+j] == 1:
+                if self.tetrimino.tetorimino[i][j] == 1 and (self.screen[self.tetrimino.y+i+1][self.tetrimino.x+j] == 1 or self.tetrimino.y+i>=HEIGHT-1):
                     return True
         return False
 
@@ -81,7 +81,7 @@ class Game():
     '''
     def __is_gameover(self):
         counter = 0
-        for i in range(1, WIDTH+1):
+        for i in range(1, WIDTH):
             if self.screen[0][i] == 1:
                 counter = counter + 1
                 if counter >= 4:
@@ -102,22 +102,17 @@ class Game():
     テトリミノを下に動かす、テトリミノを固定する、新しいテトリミノを生成する
     '''
     def do_game_loop(self):
-        # if self.__is_gameover():
-        #     return False
-        # if self.__is_collided():#ぶつかっていたら新しいテトリミノを作る
-        #     self.tetriminos.append(self.__create_next_tetrimino())
-        #     self.__reflect_tetrimino_to_screen()
-        # else:#ぶつかっていなければ1つ下げる
-        #     self.__down_tetrimino()
-        # #もし一列揃っていたら消す
-        # self.__is_aligned_and_delete()
-        # self.draw()
-        # return True
-        self.__down_tetrimino()
+        if self.__is_gameover():
+            return False
+        if self.__is_collided():#ぶつかっていたら新しいテトリミノを作る
+            self.__reflect_tetrimino_to_screen()
+        else:#ぶつかっていなければ1つ下げる
+            self.__down_tetrimino()
+        #もし一列揃っていたら消す
+        self.__is_aligned_and_delete()
         self.draw()
         return True
     
-        
 
     '''
     テトリミノとスクリーンを描画する
@@ -144,7 +139,7 @@ class Game():
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
                 self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
-        self.tetriminos = __create_next_tetrimino()
+        self.tetriminos = self.__create_next_tetrimino()
     '''
     テトリミノを下げる
     '''
@@ -165,17 +160,20 @@ class Game():
     テトリミノ操作
     '''
     def move_left(self):
-        if not self.__can_move("left"):
+        if self.__can_move("left"):
             self.tetrimino.move_left()
+            self.draw()
     
     def move_right(self):
-        if not self.__can_move("right"):
+        if self.__can_move("right"):
+            print("動ける")
             self.tetrimino.move_right()
+            self.draw()
     
     def move_down(self):
-        if not self.__can_move("down"):
+        if self.__can_move("down"):
             self.tetrimino.move_down()
-            #reflectする
+            self.draw()
 
 class TetriminoKind():
     def __init__(self):
@@ -200,13 +198,13 @@ class Tetrimino():
         for i in range(rotation):
             self.tetorimino = np.rot90(self.tetorimino, -1)
 
-    def move_left():
+    def move_left(self):
         self.x = self.x - 1
 
-    def move_right():
+    def move_right(self):
         self.x = self.x + 1
 
-    def move_down():
+    def move_down(self):
         self.y = self.y + 1
 
     
@@ -254,14 +252,19 @@ if __name__ == "__main__":
 
     while True:#1秒ごとに描画
         kb = getkey()
+        game.move_right()
+     
         #キー入力があればテトリミノの操作処理
-        if kb == "BB":#下
+        if kb == "122":#下,z
+            print("down")
             game.move_down()
-        elif kb == "CC":#右
+        elif kb == "100":#右,d
+            print("right")
             game.move_right()
-        elif kb == "DD":#左
+        elif kb == "97":#左,a
+            print("left")
             game.move_left()
-        elif kb == "q":#for debug
+        elif kb == "113":#for debug, q
             break
 
         #テトリミノを落とす・新しいテトリミノを作る
