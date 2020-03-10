@@ -49,11 +49,11 @@ class Game():
     '''
     def __can_move(self, direction):
         if direction == "left":
-            if self.screen[self.tetrimino.y][self.tetrimino.x-1] == 1:
+            if self.tetrimino.x==0 or self.screen[self.tetrimino.y][self.tetrimino.x-1] == 1:
                 return False
             return True
         elif direction == "right":
-            if self.screen[self.tetrimino.y][self.tetrimino.x+1] == 1:
+            if self.tetrimino.x == WIDTH-2 or self.screen[self.tetrimino.y][self.tetrimino.x+1] == 1:
                 return False
             return True
         elif direction == "down":
@@ -62,7 +62,7 @@ class Game():
                 if np.any(self.tetrimino.tetorimino[lowest_i]==1):
                     lowest = lowest_i
             for i in range(MAX_TETRIMINO_SIZE):
-                if((self.tetrimino.y+lowest >= HEIGHT-1) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
+                if((self.tetrimino.y+lowest >= HEIGHT-2) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
                     return False
             return True
 
@@ -252,20 +252,31 @@ if __name__ == "__main__":
 
     while True:#1秒ごとに描画
         kb = getkey()
-        game.move_right()
      
         #キー入力があればテトリミノの操作処理
-        if kb == "122":#下,z
-            print("down")
-            game.move_down()
-        elif kb == "100":#右,d
-            print("right")
-            game.move_right()
-        elif kb == "97":#左,a
-            print("left")
+        # if kb == "122":#下,z
+        #     print("down")
+        #     game.move_down()
+        # elif kb == "100":#右,d
+        #     print("right")
+        #     game.move_right()
+        # elif kb == "97":#左,a
+        #     print("left")
+        #     game.move_left()
+        # elif kb == "113":#for debug, q
+        #     break
+
+        a = input()
+        if(a == "a"):
+            print("左")
             game.move_left()
-        elif kb == "113":#for debug, q
-            break
+        elif a == "d":
+            print("右")
+            game.move_right()
+        elif a == "z":
+            print("した")
+            game.move_down()
+
 
         #テトリミノを落とす・新しいテトリミノを作る
         is_gamecontinue = game.do_game_loop()
@@ -273,7 +284,7 @@ if __name__ == "__main__":
         if not is_gamecontinue:
             break
 
-        time.sleep(1)
+        #time.sleep(1)
     
     print("Game Over!")
 
