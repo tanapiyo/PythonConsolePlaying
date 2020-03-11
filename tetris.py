@@ -41,6 +41,7 @@ class Game():
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
                 if self.tetrimino.tetorimino[i][j] == 1 and (self.screen[self.tetrimino.y+i+1][self.tetrimino.x+j] == 1 or self.tetrimino.y+i>=HEIGHT-1):
+                    print("collide")
                     return True
         return False
 
@@ -122,6 +123,8 @@ class Game():
         # screen = np.where(screen == 0, "□", screen)#何もない
         # screen = np.where(screen == 1, "◼", screen)#テトリミノ
         # screen = np.where(screen == '2', "＃", screen)#壁
+        print("draw")
+        print(self.tetrimino)
         screen_buffer = copy.deepcopy(self.screen)
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
@@ -135,13 +138,12 @@ class Game():
     （スクリーンに反映＝スクリーンに同化）
     '''
     def __reflect_tetrimino_to_screen(self):
-        #for tetrimino in self.tetriminos:
         #1行ずつself.screenをテトリミノで置き換え
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
                 if self.tetrimino.tetorimino[i][j] == 1:
                     self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
-        self.tetriminos = self.__create_next_tetrimino()
+        self.tetrimino = self.__create_next_tetrimino()
     '''
     テトリミノを下げる
     '''
