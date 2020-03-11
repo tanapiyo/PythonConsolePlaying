@@ -106,6 +106,7 @@ class Game():
         if self.__is_gameover():
             return False
         if self.__is_collided():#ぶつかっていたら新しいテトリミノを作る
+            print("collide")
             self.__reflect_tetrimino_to_screen()
         else:#ぶつかっていなければ1つ下げる
             self.__down_tetrimino()
@@ -154,11 +155,11 @@ class Game():
                 self.screen[self.tetrimino.y][self.tetrimino.x+x_index] = 0
             #テトリミノ自体の位置を下げる
             self.tetrimino.y = self.tetrimino.y+1
-            #テトリミノを下げた座標でscreenを更新
-            for i in range(MAX_TETRIMINO_SIZE):#y
-                for j in range(MAX_TETRIMINO_SIZE):#x
-                    if self.tetrimino.tetorimino[i][j] == 1:
-                        self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
+            # #テトリミノを下げた座標でscreenを更新
+            # for i in range(MAX_TETRIMINO_SIZE):#y
+            #     for j in range(MAX_TETRIMINO_SIZE):#x
+            #         if self.tetrimino.tetorimino[i][j] == 1:
+            #             self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
                 
 
     '''
