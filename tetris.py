@@ -7,7 +7,8 @@ import copy
 
 
 WIDTH = 6
-HEIGHT = 20
+# HEIGHT = 20
+HEIGHT = 6
 MAX_TETRIMINO_SIZE = 4
 
 class Game():
@@ -40,7 +41,11 @@ class Game():
         #テトリミノの下が壁もしくはテトリミノかどうかの判定
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                if self.tetrimino.tetorimino[i][j] == 1 and (self.screen[self.tetrimino.y+i+1][self.tetrimino.x+j] == 1 or self.tetrimino.y+i>=HEIGHT-1):
+                print(self.tetrimino.y)
+                print(j)
+                print(self.tetrimino.tetorimino[i][j] == 1)
+                print(self.tetrimino.y+i>=HEIGHT-1)
+                if self.tetrimino.tetorimino[i][j] == 1 and (self.tetrimino.y+i>=HEIGHT-1 or self.screen[self.tetrimino.y+i+1][self.tetrimino.x+j] == 1):
                     print("collide")
                     return True
         return False
@@ -63,7 +68,7 @@ class Game():
                 if np.any(self.tetrimino.tetorimino[lowest_i]==1):
                     lowest = lowest_i
             for i in range(MAX_TETRIMINO_SIZE):
-                if((self.tetrimino.y+lowest >= HEIGHT-2) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
+                if((self.tetrimino.y+lowest >= HEIGHT-1) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
                     return False
             return True
 
@@ -82,11 +87,17 @@ class Game():
     '''
     def __is_gameover(self):
         counter = 0
-        for i in range(1, WIDTH):
+        blank = 0
+        for i in range(WIDTH):
             if self.screen[0][i] == 1:
                 counter = counter + 1
                 if counter >= 4:
                     return True
+            else:
+                blank += 1
+                if blank >= 4:
+                    counter = 0
+                    blank = 0
         return False
 
 
