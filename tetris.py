@@ -8,7 +8,7 @@ import copy
 
 WIDTH = 6
 # HEIGHT = 20
-HEIGHT = 6
+HEIGHT = 10
 MAX_TETRIMINO_SIZE = 4
 
 class Game():
@@ -41,10 +41,6 @@ class Game():
         #テトリミノの下が壁もしくはテトリミノかどうかの判定
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
-                print(self.tetrimino.y)
-                print(j)
-                print(self.tetrimino.tetorimino[i][j] == 1)
-                print(self.tetrimino.y+i>=HEIGHT-1)
                 if self.tetrimino.tetorimino[i][j] == 1 and (self.tetrimino.y+i>=HEIGHT-1 or self.screen[self.tetrimino.y+i+1][self.tetrimino.x+j] == 1):
                     print("collide")
                     return True
@@ -68,7 +64,7 @@ class Game():
                 if np.any(self.tetrimino.tetorimino[lowest_i]==1):
                     lowest = lowest_i
             for i in range(MAX_TETRIMINO_SIZE):
-                if((self.tetrimino.y+lowest >= HEIGHT-1) or (self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
+                if((self.tetrimino.y+lowest >= HEIGHT-1) or (self.tetrimino.tetorimino[lowest][i] == 1 and self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
                     return False
             return True
 
@@ -117,7 +113,6 @@ class Game():
         if self.__is_gameover():
             return False
         if self.__is_collided():#ぶつかっていたら新しいテトリミノを作る
-            print("collide")
             self.__reflect_tetrimino_to_screen()
         else:#ぶつかっていなければ1つ下げる
             self.__down_tetrimino()
