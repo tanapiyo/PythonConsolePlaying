@@ -87,8 +87,8 @@ class Game():
         elif direction == "down":
             down_outline = []
             result = np.any(self.tetrimino.tetorimino==1, axis=0)
-            temp_transporsed_tetrimino = self.tetrimino.tetorimino.T
-            for line in temp_transporsed_tetrimino:
+            transporsed_tetrimino = self.tetrimino.tetorimino.T
+            for line in transporsed_tetrimino:
                 result = np.where(line==1)
                 if len(result[0])>0:
                     down_outline.append(result[0][-1])#一番下が一番右にあたる（∵転置している）ので-1をとる
@@ -113,22 +113,35 @@ class Game():
 
     '''
     ゲームオーバー判定
-    今回は左上に必ずテトリミノをおくので、左上に隙間がなければゲームオーバー
+    今回は左上に必ずテトリミノをおくので、左上にテトリミノを置けなければゲームオーバー
     '''
     def __is_gameover(self):
-        counter = 0
-        blank = 0
-        for i in range(WIDTH):
-            if self.screen[0][i] == 1:
-                counter = counter + 1
-                if counter >= 4:
-                    return True
-            else:
-                blank += 1
-                if blank >= 4:
-                    counter = 0
-                    blank = 0
-        return False
+        #列ごとに見てテトリミノの高さがscreenに入るか判断する
+        height_list = []
+        transporsed_tetrimino = self.tetrimino.tetorimino.T
+        for line in transporsed_tetrimino:
+                result = np.where(line==1)
+                if len(result[0])>1:
+                    height_list.append(result[-1]-result[0]+1)
+                elif len(result[0]==1):
+                    height_list.append(1)
+                else:
+                    height_list.append(0)#高さがないので計算には影響しない
+        #スクリーンが左から高さ分あいているかをみる
+        for j in range(MAX_TETRIMINO_SIZE):#テトリミノの高さ分のyをみる
+            counter_y = 0
+            for i in range(MAX_TETRIMINO_SIZE):
+                if height_list[i]== 0: break
+                if self.screen[i][j] == 0:
+                    counter_y += 1
+                    if counter_y >= height_list[i]:
+                        break
+                    if i == MAX_TETRIMINO_SIZE-1:
+                        return False
+        return True
+
+
+                
 
 
     '''
