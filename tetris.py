@@ -1,6 +1,5 @@
 import numpy as np
 from enum import Enum
-import readchar
 import sys
 import time
 import copy
@@ -51,29 +50,55 @@ class Game():
     '''
     def __can_move(self, direction):
         if direction == "left":
-            #一番左の要素はどこか
-            for left_i in range (MAX_TETRIMINO_SIZE):
-                if np.any(self.tetrimino.tetorimino[left_i]==1, axis=0):
-                    left_i = left_i
-            print(tetrimino.tetorimino)
-            print(left_i)
-
-            if self.tetrimino.x==0 or self.screen[self.tetrimino.y][self.tetrimino.x-1] == 1:
-                return False
+            left_outline = []#高さごとの一番左のindex
+            #テトリミノの外枠の左があいているか
+            #列ごとに一番左の1の一を探す
+            for line in self.tetrimino.tetorimino:
+                result = np.where(line==1)
+                if len(result[0])>0:
+                    left_outline.append(result[0][0])
+                else:
+                    left_outline.append(-1)
+            for i, outline in enumerate(left_outline):
+                if outline == -1:
+                    continue
+                if outline+self.tetrimino.x<=0 or self.screen[self.tetrimino.y+i][self.tetrimino.x+outline-1] == 1:
+                    return False
             return True
+
             
         elif direction == "right":
-            #一番右の要素はどこか
-            if self.tetrimino.x >= WIDTH-1 or self.screen[self.tetrimino.y][self.tetrimino.x+1] == 1:
-                return False
+            right_outline = []
+            #テトリミノの外枠の右があいているか
+            #列ごとに一番左の1の一を探す
+            for line in self.tetrimino.tetorimino:
+                result = np.where(line==1)
+                if len(result[0])>0:
+                    left_outline.append(result[0][-1])
+                else:
+                    left_outline.append(-1)
+            for i, outline in enumerate(left_outline):
+                if outline == -1:
+                    continue
+                if outline+self.tetrimino.x>=WIDTH-1 or self.screen[self.tetrimino.y+i][self.tetrimino.x+outline+1] == 1:
+                    return False
             return True
+
         elif direction == "down":
-            lowest = 0
-            for lowest_i in range (MAX_TETRIMINO_SIZE):
-                if np.any(self.tetrimino.tetorimino[lowest_i]==1):
-                    lowest = lowest_i
-            for i in range(MAX_TETRIMINO_SIZE):
-                if((self.tetrimino.y+lowest >= HEIGHT-1) or (self.tetrimino.tetorimino[lowest][i] == 1 and self.screen[self.tetrimino.y+lowest+1][self.tetrimino.x+i] == 1)):
+            down_outline = []
+            result = np.any(self.tetrimino.tetorimino==1, axis=0)
+            temp_transporsed_tetrimino = self.tetrimino.tetorimino.T
+            for line in temp_transporsed_tetrimino:
+                result = np.where(line==1)
+                if len(result[0])>0:
+                    down_outline.append(result[0][-1])#一番下が一番右にあたる（∵転置している）ので-1をとる
+                else:
+                    down_outline.append(-1)
+
+            for i, outline in enumerate(down_outline):
+                if outline == -1:
+                    continue
+                if outline+self.tetrimino.y>=HEIGHT-1 or self.screen[self.tetrimino.y+outline+1][self.tetrimino.x+i] == 1:
                     return False
             return True
 
@@ -87,8 +112,8 @@ class Game():
                 np.append(np.zeros[WIDTH], self.screen)#先頭に0を追加
 
     '''
-    ゲームオーバー判定（もし最後のテトリミノの上が空いていなければ）
-    とりあえず残りが2行になったらゲームーオーバー
+    ゲームオーバー判定
+    今回は左上に必ずテトリミノをおくので、左上に隙間がなければゲームオーバー
     '''
     def __is_gameover(self):
         counter = 0
@@ -139,8 +164,6 @@ class Game():
         # screen = np.where(screen == 0, "□", screen)#何もない
         # screen = np.where(screen == 1, "◼", screen)#テトリミノ
         # screen = np.where(screen == '2', "＃", screen)#壁
-        print("draw")
-        print(self.tetrimino)
         screen_buffer = copy.deepcopy(self.screen)
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
@@ -167,9 +190,6 @@ class Game():
         if self.__can_move("down"):
             #一番上のテトリミノがいたところは0に戻す
             for x_index in range(MAX_TETRIMINO_SIZE):
-                print("xは", self.tetrimino.x)
-                print("x_index", x_index)
-                print(self.tetrimino.tetorimino)
                 if(self.tetrimino.tetorimino[0][x_index] == 1):
                     self.screen[self.tetrimino.y][self.tetrimino.x+x_index] = 0
             #テトリミノ自体の位置を下げる
@@ -191,7 +211,6 @@ class Game():
     
     def move_right(self):
         if self.__can_move("right"):
-            print("動ける")
             self.tetrimino.move_right()
             self.draw()
     
