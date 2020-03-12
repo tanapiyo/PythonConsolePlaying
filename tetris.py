@@ -51,11 +51,20 @@ class Game():
     '''
     def __can_move(self, direction):
         if direction == "left":
+            #一番左の要素はどこか
+            for left_i in range (MAX_TETRIMINO_SIZE):
+                if np.any(self.tetrimino.tetorimino[left_i]==1, axis=0):
+                    left_i = left_i
+            print(tetrimino.tetorimino)
+            print(left_i)
+
             if self.tetrimino.x==0 or self.screen[self.tetrimino.y][self.tetrimino.x-1] == 1:
                 return False
             return True
+            
         elif direction == "right":
-            if self.tetrimino.x == WIDTH-2 or self.screen[self.tetrimino.y][self.tetrimino.x+1] == 1:
+            #一番右の要素はどこか
+            if self.tetrimino.x >= WIDTH-1 or self.screen[self.tetrimino.y][self.tetrimino.x+1] == 1:
                 return False
             return True
         elif direction == "down":
@@ -136,7 +145,7 @@ class Game():
         for i in range(MAX_TETRIMINO_SIZE):#y
             for j in range(MAX_TETRIMINO_SIZE):#x
                 if self.tetrimino.tetorimino[i][j] == 1:
-                  screen_buffer[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
+                    screen_buffer[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
         print(screen_buffer)
         print("\n\n\n\n\n")
     
@@ -158,7 +167,11 @@ class Game():
         if self.__can_move("down"):
             #一番上のテトリミノがいたところは0に戻す
             for x_index in range(MAX_TETRIMINO_SIZE):
-                self.screen[self.tetrimino.y][self.tetrimino.x+x_index] = 0
+                print("xは", self.tetrimino.x)
+                print("x_index", x_index)
+                print(self.tetrimino.tetorimino)
+                if(self.tetrimino.tetorimino[0][x_index] == 1):
+                    self.screen[self.tetrimino.y][self.tetrimino.x+x_index] = 0
             #テトリミノ自体の位置を下げる
             self.tetrimino.y = self.tetrimino.y+1
             # #テトリミノを下げた座標でscreenを更新
