@@ -74,10 +74,10 @@ class Game():
             for line in self.tetrimino.tetorimino:
                 result = np.where(line==1)
                 if len(result[0])>0:
-                    left_outline.append(result[0][-1])
+                    right_outline.append(result[0][-1])
                 else:
-                    left_outline.append(-1)
-            for i, outline in enumerate(left_outline):
+                    right_outline.append(-1)
+            for i, outline in enumerate(right_outline):
                 if outline == -1:
                     continue
                 if outline+self.tetrimino.x>=WIDTH-1 or self.screen[self.tetrimino.y+i][self.tetrimino.x+outline+1] == 1:
@@ -115,33 +115,28 @@ class Game():
     ゲームオーバー判定
     今回は左上に必ずテトリミノをおくので、左上にテトリミノを置けなければゲームオーバー
     '''
-    def __is_gameover(self):
+    def __is_gameover(self, next_tetrimino):
         #列ごとに見てテトリミノの高さがscreenに入るか判断する
-        height_list = []
-        transporsed_tetrimino = self.tetrimino.tetorimino.T
-        for line in transporsed_tetrimino:
-                result = np.where(line==1)
-                if len(result[0])>1:
-                    height_list.append(result[-1]-result[0]+1)
-                elif len(result[0]==1):
-                    height_list.append(1)
-                else:
-                    height_list.append(0)#高さがないので計算には影響しない
-        #スクリーンが左から高さ分あいているかをみる
-        for j in range(MAX_TETRIMINO_SIZE):#テトリミノの高さ分のyをみる
-            counter_y = 0
-            for i in range(MAX_TETRIMINO_SIZE):
-                if height_list[i]== 0: break
-                if self.screen[i][j] == 0:
-                    counter_y += 1
-                    if counter_y >= height_list[i]:
-                        break
-                    if i == MAX_TETRIMINO_SIZE-1:
-                        return False
-        return True
+        # height_list = []
+        # transporsed_tetrimino = self.tetrimino.tetorimino.T
+        # for line in transporsed_tetrimino:
+        #         result = np.where(line==1)
+        #         if len(result[0])>1:
+        #             height_list.append(result[0][-1]-result[0][0]+1)
+        #         elif len(result[0]==1):
+        #             height_list.append(1)
+        #         else:
+        #             height_list.append(0)#高さがないので計算には影響しない
+
+        #テトリミノの形にあいているか
+        for i in range(MAX_TETRIMINO_SIZE):#y
+            for j in range(MAX_TETRIMINO_SIZE):#x
+                if next_tetrimino.tetorimino[i][j] == 1 and self.screen[i][j] == 1:
+                    return True#gameoverでTrue
+        return False
 
 
-                
+    
 
 
     '''
@@ -157,10 +152,10 @@ class Game():
     テトリミノを下に動かす、テトリミノを固定する、新しいテトリミノを生成する
     '''
     def do_game_loop(self):
-        if self.__is_gameover():
-            return False
         if self.__is_collided():#ぶつかっていたら新しいテトリミノを作る
-            self.__reflect_tetrimino_to_screen()
+            is_gameover = self.__reflect_tetrimino_to_screen()
+            if is_gameover:
+                return False
         else:#ぶつかっていなければ1つ下げる
             self.__down_tetrimino()
         #もし一列揃っていたら消す
@@ -188,6 +183,7 @@ class Game():
     '''
     self.tetriminoをスクリーンに反映して、新しいtetriminoをインスタンス変数に入れる
     （スクリーンに反映＝スクリーンに同化）
+    作れなかったらTrueをかえす
     '''
     def __reflect_tetrimino_to_screen(self):
         #1行ずつself.screenをテトリミノで置き換え
@@ -195,7 +191,15 @@ class Game():
             for j in range(MAX_TETRIMINO_SIZE):#x
                 if self.tetrimino.tetorimino[i][j] == 1:
                     self.screen[self.tetrimino.y+i][self.tetrimino.x+j] = self.tetrimino.tetorimino[i][j]
-        self.tetrimino = self.__create_next_tetrimino()
+        next_tetrimino = self.__create_next_tetrimino()
+        print("is_gameover")
+        print(self.__is_gameover(next_tetrimino))
+        if self.__is_gameover(next_tetrimino):
+            return True
+        else:
+            self.tetrimino = next_tetrimino
+            return False
+
     '''
     テトリミノを下げる
     '''
